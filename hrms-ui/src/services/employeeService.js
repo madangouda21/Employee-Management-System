@@ -8,7 +8,7 @@ export const getEmployees = async () => {
 
     const response = await API.get("/employees");
 
-    return response.data;
+    return response.data.data;
 
   }catch(error){
 
@@ -29,7 +29,7 @@ export const createEmployee = async (employee) => {
 
     const response = await API.post("/employees", employee);
 
-    return response.data;
+    return response.data.data;
 
   }catch(error){
 
@@ -50,7 +50,7 @@ export const updateEmployee = async (id, employee) => {
 
     const response = await API.put(`/employees/${id}`, employee);
 
-    return response.data;
+    return response.data.data;
 
   }catch(error){
 

@@ -38,15 +38,17 @@ function Employees(){
   const loadEmployees = async () => {
 
     setLoading(true);
+    setError(null);
 
     try{
 
       const data = await getEmployees();
 
-      setEmployees(data);
+      setEmployees(data || []);
 
     }catch(err){
 
+      console.error(err);
       setError("Failed to load employees");
 
     }
@@ -62,11 +64,11 @@ function Employees(){
 
       const data = await getDepartments();
 
-      setDepartments(data);
+      setDepartments(data || []);
 
     }catch(err){
 
-      console.error("Department loading failed");
+      console.error("Department loading failed", err);
 
     }
 
@@ -76,6 +78,11 @@ function Employees(){
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+
+    if(!name || !email || !departmentId){
+      setError("All fields are required");
+      return;
+    }
 
     const employee = {
       name,
@@ -88,7 +95,6 @@ function Employees(){
       if(editingId){
 
         await updateEmployee(editingId,employee);
-
         setEditingId(null);
 
       }else{
@@ -105,6 +111,7 @@ function Employees(){
 
     }catch(err){
 
+      console.error(err);
       setError("Operation failed");
 
     }
@@ -114,9 +121,9 @@ function Employees(){
 
   const handleEdit = (emp) => {
 
-    setName(emp.name);
-    setEmail(emp.email);
-    setDepartmentId(emp.departmentId);
+    setName(emp.name || "");
+    setEmail(emp.email || "");
+    setDepartmentId(emp.departmentId || "");
 
     setEditingId(emp.id);
 
@@ -135,6 +142,7 @@ function Employees(){
 
     }catch(err){
 
+      console.error(err);
       setError("Delete failed");
 
     }
@@ -143,9 +151,7 @@ function Employees(){
 
 
   const filteredEmployees = employees.filter((emp)=>
-
-    emp.name.toLowerCase().includes(search.toLowerCase())
-
+    emp.name?.toLowerCase().includes(search.toLowerCase())
   );
 
 
@@ -155,8 +161,6 @@ function Employees(){
 
       <h1 className="page-title">Employee Management</h1>
 
-
-      {/* Employee Form */}
 
       <form className="form-container" onSubmit={handleSubmit}>
 
@@ -200,8 +204,6 @@ function Employees(){
       </form>
 
 
-      {/* Search */}
-
       <input
         type="text"
         placeholder="Search employee..."
@@ -215,8 +217,6 @@ function Employees(){
 
       {error && <p className="error">{error}</p>}
 
-
-      {/* Employee Table */}
 
       <div className="table-container">
 
@@ -256,7 +256,7 @@ function Employees(){
 
                 <td>{emp.email}</td>
 
-                <td>{emp.departmentName}</td>
+                <td>{emp.departmentName || "N/A"}</td>
 
                 <td>
 

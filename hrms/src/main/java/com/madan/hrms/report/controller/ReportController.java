@@ -1,7 +1,7 @@
 package com.madan.hrms.report.controller;
 
-import com.madan.hrms.report.dto.ReportDTO;
-import com.madan.hrms.report.service.ReportService;
+import com.madan.hrms.employee.entity.Employee;
+import com.madan.hrms.employee.repository.EmployeeRepository;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -12,24 +12,30 @@ import java.util.List;
 @CrossOrigin(origins="*")
 public class ReportController {
 
-    private final ReportService reportService;
+    private final EmployeeRepository employeeRepository;
 
-    public ReportController(ReportService reportService){
-        this.reportService = reportService;
+    public ReportController(EmployeeRepository employeeRepository){
+        this.employeeRepository = employeeRepository;
     }
 
-    @GetMapping
-    public List<ReportDTO> getReports(){
-        return reportService.getAllReports();
+    @GetMapping("/employees")
+    public List<Employee> getEmployeeReport(){
+        return employeeRepository.findAll();
     }
 
-    @PostMapping
-    public ReportDTO createReport(@RequestBody ReportDTO dto){
-        return reportService.createReport(dto);
+    @GetMapping("/attendance")
+    public String getAttendanceReport(){
+        return "Attendance report endpoint working";
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteReport(@PathVariable Long id){
-        reportService.deleteReport(id);
+    @GetMapping("/payroll")
+    public String getPayrollReport(){
+        return "Payroll report endpoint working";
     }
+
+    @GetMapping("/leaves")
+    public String getLeaveReport(){
+        return "Leave report endpoint working";
+    }
+
 }

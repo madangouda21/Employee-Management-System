@@ -19,56 +19,81 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    /* ==============================
+       Get All Employees
+    ============================== */
+
     public List<EmployeeResponse> getAllEmployees(){
 
-        return employeeRepository.findAll()
-                .stream()
-                .map(e -> new EmployeeResponse(
-                        e.getId(),
-                        e.getName(),
-                        e.getEmail(),
-                        e.getDepartment()
-                ))
+        List<Employee> employees = employeeRepository.findAll();
+
+        return employees.stream()
+                .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+    /* ==============================
+       Create Employee
+    ============================== */
 
     public EmployeeResponse createEmployee(EmployeeRequest request){
 
         Employee employee = new Employee();
+
         employee.setName(request.getName());
         employee.setEmail(request.getEmail());
         employee.setDepartment(request.getDepartment());
 
-        Employee saved = employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
 
-        return new EmployeeResponse(
-                saved.getId(),
-                saved.getName(),
-                saved.getEmail(),
-                saved.getDepartment()
-        );
+        return mapToResponse(savedEmployee);
     }
+
+    /* ==============================
+       Update Employee
+    ============================== */
 
     public EmployeeResponse updateEmployee(Long id, EmployeeRequest request){
 
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Employee not found with id: " + id)
+                );
 
         employee.setName(request.getName());
         employee.setEmail(request.getEmail());
         employee.setDepartment(request.getDepartment());
 
-        Employee updated = employeeRepository.save(employee);
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        return mapToResponse(updatedEmployee);
+    }
+
+    /* ==============================
+       Delete Employee
+    ============================== */
+
+    public void deleteEmployee(Long id){
+
+        if(!employeeRepository.existsById(id)){
+            throw new IllegalArgumentException("Employee not found with id: " + id);
+        }
+
+        employeeRepository.deleteById(id);
+    }
+
+    /* ==============================
+       Entity → DTO Mapper
+    ============================== */
+
+    private EmployeeResponse mapToResponse(Employee employee){
 
         return new EmployeeResponse(
-                updated.getId(),
-                updated.getName(),
-                updated.getEmail(),
-                updated.getDepartment()
+                employee.getId(),
+                employee.getName(),
+                employee.getEmail(),
+                employee.getDepartment()
         );
     }
 
-    public void deleteEmployee(Long id){
-        employeeRepository.deleteById(id);
-    }
 }

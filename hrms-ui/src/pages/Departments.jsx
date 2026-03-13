@@ -17,21 +17,19 @@ function Departments(){
   const [error,setError] = useState(null);
 
   useEffect(()=>{
-
     fetchDepartments();
-
   },[]);
-
 
   const fetchDepartments = async () => {
 
     setLoading(true);
+    setError(null);
 
     try{
 
       const data = await getDepartments();
 
-      setDepartments(data);
+      setDepartments(data || []);
 
     }catch(err){
 
@@ -48,14 +46,16 @@ function Departments(){
 
     e.preventDefault();
 
-    if(name.trim() === "") return;
+    if(name.trim() === ""){
+      setError("Department name is required");
+      return;
+    }
 
     try{
 
       if(editingId){
 
         await updateDepartment(editingId,{name});
-
         setEditingId(null);
 
       }else{
@@ -65,7 +65,6 @@ function Departments(){
       }
 
       setName("");
-
       fetchDepartments();
 
     }catch(err){
@@ -92,7 +91,6 @@ function Departments(){
     try{
 
       await deleteDepartment(id);
-
       fetchDepartments();
 
     }catch(err){
@@ -110,13 +108,13 @@ function Departments(){
 
       <h1 className="page-title">Departments Management</h1>
 
-
       <form onSubmit={handleSubmit} className="form-container">
 
         <input
           type="text"
           placeholder="Department Name"
           value={name}
+          required
           onChange={(e)=>setName(e.target.value)}
         />
 
@@ -130,7 +128,6 @@ function Departments(){
 
 
       {loading && <p>Loading departments...</p>}
-
       {error && <p className="error">{error}</p>}
 
 
@@ -139,13 +136,11 @@ function Departments(){
         <table className="data-table">
 
           <thead>
-
             <tr>
               <th>ID</th>
               <th>Name</th>
               <th>Actions</th>
             </tr>
-
           </thead>
 
           <tbody>
@@ -162,7 +157,6 @@ function Departments(){
               <tr key={dept.id}>
 
                 <td>{dept.id}</td>
-
                 <td>{dept.name}</td>
 
                 <td>

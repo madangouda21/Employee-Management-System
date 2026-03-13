@@ -6,29 +6,32 @@ function Navbar() {
 
   const navigate = useNavigate();
 
-  const [adminName,setAdminName] = useState("");
-  const [adminEmail,setAdminEmail] = useState("");
+  const [adminName,setAdminName] = useState("Admin");
+  const [adminEmail,setAdminEmail] = useState("admin@hrms.com");
 
   useEffect(()=>{
 
-    const email = localStorage.getItem("userEmail") || "admin@hrms.com";
+    const email = localStorage.getItem("userEmail");
+    const name = localStorage.getItem("userName");
 
-    const name = localStorage.getItem("userName") || "Admin";
+    if(email){
+      setAdminEmail(email);
+    }
 
-    setAdminEmail(email);
-    setAdminName(name);
+    if(name){
+      setAdminName(name);
+    }
 
   },[]);
 
 
   const handleLogout = () => {
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userRole");
+    localStorage.clear();
 
     navigate("/");
+
+    window.location.reload();
 
   };
 

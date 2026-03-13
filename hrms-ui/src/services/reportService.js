@@ -1,18 +1,21 @@
 import API from "./api";
 
-/* Employee report */
+const REPORT_BASE = "/reports";
+
+/* Employee Report */
 
 export const getEmployeeReport = async () => {
 
   try{
 
-    const response = await API.get("/reports/employees");
+    const response = await API.get(`${REPORT_BASE}/employees`);
 
     return response.data;
 
   }catch(error){
 
-    console.error("Employee report error", error);
+    console.error("Failed to fetch employee report", error);
+
     throw error;
 
   }
@@ -20,19 +23,20 @@ export const getEmployeeReport = async () => {
 };
 
 
-/* Attendance report */
+/* Attendance Report */
 
 export const getAttendanceReport = async () => {
 
   try{
 
-    const response = await API.get("/reports/attendance");
+    const response = await API.get(`${REPORT_BASE}/attendance`);
 
     return response.data;
 
   }catch(error){
 
-    console.error("Attendance report error", error);
+    console.error("Failed to fetch attendance report", error);
+
     throw error;
 
   }
@@ -40,19 +44,20 @@ export const getAttendanceReport = async () => {
 };
 
 
-/* Payroll report */
+/* Payroll Report */
 
 export const getPayrollReport = async () => {
 
   try{
 
-    const response = await API.get("/reports/payroll");
+    const response = await API.get(`${REPORT_BASE}/payroll`);
 
     return response.data;
 
   }catch(error){
 
-    console.error("Payroll report error", error);
+    console.error("Failed to fetch payroll report", error);
+
     throw error;
 
   }
@@ -60,19 +65,20 @@ export const getPayrollReport = async () => {
 };
 
 
-/* Leave report */
+/* Leave Report */
 
 export const getLeaveReport = async () => {
 
   try{
 
-    const response = await API.get("/reports/leaves");
+    const response = await API.get(`${REPORT_BASE}/leaves`);
 
     return response.data;
 
   }catch(error){
 
-    console.error("Leave report error", error);
+    console.error("Failed to fetch leave report", error);
+
     throw error;
 
   }

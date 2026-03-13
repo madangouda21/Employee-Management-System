@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import "../assets/css/style.css";
 
 import {
@@ -10,57 +10,39 @@ import {
 
 function Reports(){
 
-  const [employees,setEmployees] = useState([]);
-  const [attendance,setAttendance] = useState([]);
-  const [payroll,setPayroll] = useState([]);
-  const [leaves,setLeaves] = useState([]);
-
-  const [activeReport,setActiveReport] = useState("employees");
-
-  const [loading,setLoading] = useState(false);
+  const [reportType,setReportType] = useState("employees");
+  const [data,setData] = useState([]);
   const [error,setError] = useState(null);
 
-
   useEffect(()=>{
+    loadReport("employees");
+  },[]);
 
-    loadReports();
+  const loadReport = async(type)=>{
 
-  },[activeReport]);
-
-
-  const loadReports = async () => {
-
-    setLoading(true);
+    setError(null);
 
     try{
 
-      if(activeReport === "employees"){
+      let result = [];
 
-        const data = await getEmployeeReport();
-        setEmployees(data);
-
+      if(type === "employees"){
+        result = await getEmployeeReport();
       }
 
-      if(activeReport === "attendance"){
-
-        const data = await getAttendanceReport();
-        setAttendance(data);
-
+      if(type === "attendance"){
+        result = await getAttendanceReport();
       }
 
-      if(activeReport === "payroll"){
-
-        const data = await getPayrollReport();
-        setPayroll(data);
-
+      if(type === "payroll"){
+        result = await getPayrollReport();
       }
 
-      if(activeReport === "leaves"){
-
-        const data = await getLeaveReport();
-        setLeaves(data);
-
+      if(type === "leaves"){
+        result = await getLeaveReport();
       }
+
+      setData(result);
 
     }catch(err){
 
@@ -68,41 +50,12 @@ function Reports(){
 
     }
 
-    setLoading(false);
-
   };
 
-
-  const exportCSV = (data) => {
-
-    const csvRows = [];
-
-    const headers = Object.keys(data[0] || {});
-    csvRows.push(headers.join(","));
-
-    for(const row of data){
-
-      const values = headers.map(header => row[header]);
-
-      csvRows.push(values.join(","));
-
-    }
-
-    const csvString = csvRows.join("\n");
-
-    const blob = new Blob([csvString], {type:"text/csv"});
-
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = "report.csv";
-
-    a.click();
-
+  const changeReport = (type)=>{
+    setReportType(type);
+    loadReport(type);
   };
-
 
   return(
 
@@ -110,51 +63,27 @@ function Reports(){
 
       <h1 className="page-title">Reports & Analytics</h1>
 
+      <div className="form-container">
 
-      {/* Report selector */}
-
-      <div className="report-tabs">
-
-        <button onClick={()=>setActiveReport("employees")}>
+        <button onClick={()=>changeReport("employees")}>
           Employees
         </button>
 
-        <button onClick={()=>setActiveReport("attendance")}>
+        <button onClick={()=>changeReport("attendance")}>
           Attendance
         </button>
 
-        <button onClick={()=>setActiveReport("payroll")}>
+        <button onClick={()=>changeReport("payroll")}>
           Payroll
         </button>
 
-        <button onClick={()=>setActiveReport("leaves")}>
+        <button onClick={()=>changeReport("leaves")}>
           Leaves
         </button>
 
       </div>
 
-
-      {loading && <p>Loading report...</p>}
-
       {error && <p className="error">{error}</p>}
-
-
-      {/* Export */}
-
-      <button
-        className="export-btn"
-        onClick={()=>exportCSV(
-          activeReport === "employees" ? employees :
-          activeReport === "attendance" ? attendance :
-          activeReport === "payroll" ? payroll :
-          leaves
-        )}
-      >
-        Export CSV
-      </button>
-
-
-      {/* Report Table */}
 
       <div className="table-container">
 
@@ -164,35 +93,67 @@ function Reports(){
 
             <tr>
 
-              {Object.keys(
-                activeReport === "employees" ? employees[0] || {} :
-                activeReport === "attendance" ? attendance[0] || {} :
-                activeReport === "payroll" ? payroll[0] || {} :
-                leaves[0] || {}
-              ).map((key)=>(
-                <th key={key}>{key}</th>
-              ))}
+              {reportType === "employees" && (
+                <>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Department</th>
+                </>
+              )}
+
+              {reportType === "attendance" && (
+                <>
+                  <th>ID</th>
+                  <th>Employee</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </>
+              )}
+
+              {reportType === "payroll" && (
+                <>
+                  <th>ID</th>
+                  <th>Employee</th>
+                  <th>Salary</th>
+                  <th>Net Pay</th>
+                </>
+              )}
+
+              {reportType === "leaves" && (
+                <>
+                  <th>ID</th>
+                  <th>Employee</th>
+                  <th>Start Date</th>
+                  <th>Status</th>
+                </>
+              )}
 
             </tr>
 
           </thead>
 
-
           <tbody>
 
-            {(activeReport === "employees" ? employees :
-             activeReport === "attendance" ? attendance :
-             activeReport === "payroll" ? payroll :
-             leaves
-            ).map((row,index)=>(
-              <tr key={index}>
+            {data.length === 0 ? (
 
-                {Object.values(row).map((value,i)=>(
-                  <td key={i}>{value}</td>
-                ))}
-
+              <tr>
+                <td colSpan="5">No data available</td>
               </tr>
-            ))}
+
+            ) : (
+
+              data.map((item)=>(
+                <tr key={item.id}>
+
+                  {Object.values(item).map((val,index)=>(
+                    <td key={index}>{val}</td>
+                  ))}
+
+                </tr>
+              ))
+
+            )}
 
           </tbody>
 

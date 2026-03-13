@@ -20,61 +20,61 @@ function Sidebar() {
 
         <li>
           <NavLink to="/dashboard">
-            📊 Dashboard
+            Dashboard
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/employees">
-            👥 Employees
+            Employees
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/departments">
-            🏢 Departments
+            Departments
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/attendance">
-            📅 Attendance
+            Attendance
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/leave">
-            ✉️ Leave Management
+            Leave Management
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/payroll">
-            💰 Payroll
+            Payroll
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/performance">
-            ⭐ Performance
+            Performance
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/notifications">
-            🔔 Notifications
+            Notifications
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/reports">
-            📑 Reports
+            Reports
           </NavLink>
         </li>
 
         <li>
           <NavLink to="/audit">
-            🛡 Audit Logs
+            Audit Logs
           </NavLink>
         </li>
 

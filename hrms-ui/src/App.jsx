@@ -14,9 +14,9 @@ import Audit from "./pages/Audit";
 
 import Layout from "./components/layout/Layout";
 
-function App() {
+function App(){
 
-  return (
+  return(
 
     <BrowserRouter>
 
@@ -27,14 +27,23 @@ function App() {
         <Route element={<Layout />}>
 
           <Route path="/dashboard" element={<Dashboard />} />
+
           <Route path="/employees" element={<Employees />} />
+
           <Route path="/departments" element={<Departments />} />
+
           <Route path="/attendance" element={<Attendance />} />
+
           <Route path="/leave" element={<Leave />} />
+
           <Route path="/payroll" element={<Payroll />} />
+
           <Route path="/performance" element={<Performance />} />
+
           <Route path="/notifications" element={<Notifications />} />
+
           <Route path="/reports" element={<Reports />} />
+
           <Route path="/audit" element={<Audit />} />
 
         </Route>

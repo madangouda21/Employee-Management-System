@@ -28,7 +28,6 @@ function Leave(){
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState(null);
 
-
   useEffect(()=>{
 
     loadLeaves();
@@ -40,12 +39,12 @@ function Leave(){
   const loadLeaves = async () => {
 
     setLoading(true);
+    setError(null);
 
     try{
 
       const data = await getLeaves();
-
-      setLeaves(data);
+      setLeaves(data || []);
 
     }catch(err){
 
@@ -63,8 +62,7 @@ function Leave(){
     try{
 
       const data = await getEmployees();
-
-      setEmployees(data);
+      setEmployees(data || []);
 
     }catch(err){
 
@@ -79,14 +77,22 @@ function Leave(){
 
     e.preventDefault();
 
-    const leave = {
+    if(!employeeId || !startDate || !endDate){
+      setError("All fields are required");
+      return;
+    }
 
+    if(endDate < startDate){
+      setError("End date cannot be before start date");
+      return;
+    }
+
+    const leave = {
       employeeId,
       startDate,
       endDate,
       reason,
       status
-
     };
 
     try{
@@ -94,7 +100,6 @@ function Leave(){
       if(editingId){
 
         await updateLeave(editingId,leave);
-
         setEditingId(null);
 
       }else{
@@ -140,7 +145,6 @@ function Leave(){
     try{
 
       await deleteLeave(id);
-
       loadLeaves();
 
     }catch(err){
@@ -154,36 +158,48 @@ function Leave(){
 
   const approveLeave = async (leave) => {
 
-    const updatedLeave = {
-      ...leave,
-      status: "Approved"
-    };
+    try{
 
-    await updateLeave(leave.id,updatedLeave);
+      const updatedLeave = {
+        ...leave,
+        status: "Approved"
+      };
 
-    loadLeaves();
+      await updateLeave(leave.id,updatedLeave);
+      loadLeaves();
+
+    }catch(err){
+
+      setError("Approve failed");
+
+    }
 
   };
 
 
   const rejectLeave = async (leave) => {
 
-    const updatedLeave = {
-      ...leave,
-      status: "Rejected"
-    };
+    try{
 
-    await updateLeave(leave.id,updatedLeave);
+      const updatedLeave = {
+        ...leave,
+        status: "Rejected"
+      };
 
-    loadLeaves();
+      await updateLeave(leave.id,updatedLeave);
+      loadLeaves();
+
+    }catch(err){
+
+      setError("Reject failed");
+
+    }
 
   };
 
 
-  const filteredLeaves = leaves.filter((l)=>
-
+  const filteredLeaves = (leaves || []).filter((l)=>
     l.employeeName?.toLowerCase().includes(search.toLowerCase())
-
   );
 
 
@@ -193,8 +209,6 @@ function Leave(){
 
       <h1 className="page-title">Leave Management</h1>
 
-
-      {/* Leave Form */}
 
       <form className="form-container" onSubmit={handleSubmit}>
 
@@ -242,8 +256,6 @@ function Leave(){
       </form>
 
 
-      {/* Search */}
-
       <input
         type="text"
         placeholder="Search employee..."
@@ -254,11 +266,8 @@ function Leave(){
 
 
       {loading && <p>Loading leave requests...</p>}
-
       {error && <p className="error">{error}</p>}
 
-
-      {/* Leave Table */}
 
       <div className="table-container">
 
@@ -267,18 +276,15 @@ function Leave(){
           <thead>
 
             <tr>
-
               <th>ID</th>
               <th>Employee</th>
               <th>Start Date</th>
               <th>End Date</th>
               <th>Status</th>
               <th>Actions</th>
-
             </tr>
 
           </thead>
-
 
           <tbody>
 
@@ -294,13 +300,9 @@ function Leave(){
               <tr key={leave.id}>
 
                 <td>{leave.id}</td>
-
                 <td>{leave.employeeName}</td>
-
                 <td>{leave.startDate}</td>
-
                 <td>{leave.endDate}</td>
-
                 <td>{leave.status}</td>
 
                 <td>

@@ -61,7 +61,7 @@ function Login(){
 
       console.error("Login error:",err);
 
-      setError("Invalid email or password");
+      setError(err?.response?.data?.message || "Invalid email or password");
 
     }
 
@@ -87,6 +87,7 @@ function Login(){
             placeholder="Enter email"
             value={email}
             onChange={(e)=>setEmail(e.target.value)}
+            required
           />
 
         </div>
@@ -101,6 +102,7 @@ function Login(){
             placeholder="Enter password"
             value={password}
             onChange={(e)=>setPassword(e.target.value)}
+            required
           />
 
         </div>
@@ -125,9 +127,7 @@ function Login(){
         {error && (
 
           <p className="error-message">
-
             {error}
-
           </p>
 
         )}

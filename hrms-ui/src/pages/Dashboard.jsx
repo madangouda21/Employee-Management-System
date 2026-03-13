@@ -1,59 +1,51 @@
-import { useEffect, useState } from "react";
 import "../assets/css/style.css";
+import { useEffect, useState } from "react";
 
 import StatCard from "../components/cards/StatCard";
 import EmployeeChart from "../components/charts/EmployeeChart";
 import RecentActivity from "../components/dashboard/RecentActivity";
 
 import { getEmployees } from "../services/employeeService";
-import { getDepartments } from "../services/departmentService";
 
 function Dashboard(){
 
   const [employees,setEmployees] = useState([]);
-  const [departments,setDepartments] = useState([]);
-
-  const [activities,setActivities] = useState([]);
-
+  const [loading,setLoading] = useState(true);
+  const [error,setError] = useState(null);
 
   useEffect(()=>{
 
-    loadData();
+    const fetchEmployees = async () => {
+
+      try{
+
+        const data = await getEmployees();
+
+        setEmployees(data || []);
+
+      }catch(err){
+
+        console.error("Dashboard fetch error:",err);
+        setError("Failed to load employee data");
+
+      }
+
+      setLoading(false);
+
+    };
+
+    fetchEmployees();
 
   },[]);
 
 
-  const loadData = async () => {
+  if(loading){
+    return <div className="page-container">Loading dashboard...</div>;
+  }
 
-    try{
-
-      const emp = await getEmployees();
-      const dep = await getDepartments();
-
-      setEmployees(emp);
-      setDepartments(dep);
-
-      setActivities([
-        {action:"Employee Added",time:"10 min ago"},
-        {action:"Leave Approved",time:"30 min ago"},
-        {action:"Payroll Generated",time:"1 hour ago"}
-      ]);
-
-    }catch(err){
-
-      console.error("Dashboard loading error");
-
-    }
-
-  };
-
-
-  const chartData = departments.map((d)=>({
-
-    name: d.name,
-    employees: employees.filter(e=>e.departmentId === d.id).length
-
-  }));
+  if(error){
+    return <div className="page-container">{error}</div>;
+  }
 
 
   return(
@@ -61,9 +53,6 @@ function Dashboard(){
     <div className="page-container">
 
       <h1 className="page-title">Dashboard</h1>
-
-
-      {/* Summary Cards */}
 
       <div className="dashboard-cards">
 
@@ -74,36 +63,24 @@ function Dashboard(){
 
         <StatCard
           title="Departments"
-          value={departments.length}
+          value={
+            [...new Set(employees.map(e => e.department))].length
+          }
         />
 
         <StatCard
-          title="Attendance Today"
-          value="0"
-        />
-
-        <StatCard
-          title="Pending Leaves"
-          value="0"
+          title="Active Users"
+          value={employees.length}
         />
 
       </div>
 
 
-      {/* Charts */}
+      <div className="dashboard-grid">
 
-      <div style={{marginTop:"40px"}}>
+        <EmployeeChart employees={employees}/>
 
-        <EmployeeChart data={chartData} />
-
-      </div>
-
-
-      {/* Activity Feed */}
-
-      <div style={{marginTop:"40px"}}>
-
-        <RecentActivity activities={activities} />
+        <RecentActivity employees={employees}/>
 
       </div>
 
